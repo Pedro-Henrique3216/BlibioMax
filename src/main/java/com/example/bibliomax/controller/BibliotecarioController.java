@@ -7,9 +7,12 @@ import com.example.bibliomax.service.BibliotecarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/bibliotecario")
@@ -24,4 +27,12 @@ public class BibliotecarioController {
         bibliotecarioService.cadastrarBibliotecario(bibliotecario);
         return ResponseEntity.status(201).body(new RetornaBibliotecarioDto(bibliotecario));
     }
+
+    @GetMapping
+    public ResponseEntity<List<RetornaBibliotecarioDto>> listarBibliotecario() {
+        List<RetornaBibliotecarioDto> listaBibliotecarios = bibliotecarioService.listarBibliotecarios().stream().map(RetornaBibliotecarioDto::new).toList();
+
+        return ResponseEntity.status(200).body(listaBibliotecarios);
+    }
+
 }

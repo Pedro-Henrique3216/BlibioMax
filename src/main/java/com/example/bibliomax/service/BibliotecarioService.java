@@ -5,6 +5,8 @@ import com.example.bibliomax.repository.BibliotecarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class BibliotecarioService {
 
@@ -13,5 +15,9 @@ public class BibliotecarioService {
 
     public Bibliotecario cadastrarBibliotecario(Bibliotecario bibliotecario) {
         return bibliotecarioRepository.save(bibliotecario);
+    }
+
+    public List<Bibliotecario> listarBibliotecarios() {
+        return bibliotecarioRepository.findAll();
     }
 }
