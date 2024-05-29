@@ -1,5 +1,6 @@
 package com.example.bibliomax.service;
 
+import com.example.bibliomax.exceptions.ObjectNotFoundException;
 import com.example.bibliomax.model.Bibliotecario;
 import com.example.bibliomax.repository.BibliotecarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,7 +12,7 @@ import java.util.List;
 public class BibliotecarioService {
 
     @Autowired
-    BibliotecarioRepository bibliotecarioRepository;
+    private BibliotecarioRepository bibliotecarioRepository;
 
     public Bibliotecario cadastrarBibliotecario(Bibliotecario bibliotecario) {
         return bibliotecarioRepository.save(bibliotecario);
@@ -19,5 +20,9 @@ public class BibliotecarioService {
 
     public List<Bibliotecario> listarBibliotecarios() {
         return bibliotecarioRepository.findAll();
+    }
+
+    public Bibliotecario buscarBibliotecarioPorId(Long id) {
+        return bibliotecarioRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Bibliotecario não encontrado!"));
     }
 }

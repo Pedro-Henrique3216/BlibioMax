@@ -7,10 +7,7 @@ import com.example.bibliomax.service.BibliotecarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,12 +16,11 @@ import java.util.List;
 public class BibliotecarioController {
 
     @Autowired
-    BibliotecarioService bibliotecarioService;
+    private BibliotecarioService bibliotecarioService;
 
     @PostMapping
     public ResponseEntity<RetornaBibliotecarioDto> cadastrarBibliotecario(@RequestBody BibliotecarioDto bibliotecarioDto) {
-        Bibliotecario bibliotecario = bibliotecarioDto.toBibliotecario();
-        bibliotecarioService.cadastrarBibliotecario(bibliotecario);
+        Bibliotecario bibliotecario =  bibliotecarioService.cadastrarBibliotecario(bibliotecarioDto.toBibliotecario());
         return ResponseEntity.status(201).body(new RetornaBibliotecarioDto(bibliotecario));
     }
 
@@ -33,6 +29,12 @@ public class BibliotecarioController {
         List<RetornaBibliotecarioDto> listaBibliotecarios = bibliotecarioService.listarBibliotecarios().stream().map(RetornaBibliotecarioDto::new).toList();
 
         return ResponseEntity.status(200).body(listaBibliotecarios);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<RetornaBibliotecarioDto> buscarBibliotecarioPorId(@PathVariable Long id) {
+        Bibliotecario bibliotecario = bibliotecarioService.buscarBibliotecarioPorId(id);
+        return ResponseEntity.status(200).body(new RetornaBibliotecarioDto(bibliotecario));
     }
 
 }
