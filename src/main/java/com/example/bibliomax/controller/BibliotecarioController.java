@@ -7,6 +7,7 @@ import com.example.bibliomax.service.BibliotecarioService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,6 +35,13 @@ public class BibliotecarioController {
     @GetMapping("/{id}")
     public ResponseEntity<RetornaBibliotecarioDto> buscarBibliotecarioPorId(@PathVariable Long id) {
         Bibliotecario bibliotecario = bibliotecarioService.buscarBibliotecarioPorId(id);
+        return ResponseEntity.status(200).body(new RetornaBibliotecarioDto(bibliotecario));
+    }
+
+    @PutMapping("/{id}")
+    @Transactional
+    public ResponseEntity<RetornaBibliotecarioDto> atualizaBibliotecario(@PathVariable Long id, @RequestBody BibliotecarioDto bibliotecarioDto) {
+        Bibliotecario bibliotecario = bibliotecarioService.atualizaBibliotecario(id, bibliotecarioDto);
         return ResponseEntity.status(200).body(new RetornaBibliotecarioDto(bibliotecario));
     }
 
