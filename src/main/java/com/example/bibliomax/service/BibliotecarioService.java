@@ -3,7 +3,10 @@ package com.example.bibliomax.service;
 import com.example.bibliomax.exceptions.ObjectNotFoundException;
 import com.example.bibliomax.model.Bibliotecario;
 import com.example.bibliomax.model.BibliotecarioDto;
+import com.example.bibliomax.model.Livro;
+import com.example.bibliomax.model.LivroDto;
 import com.example.bibliomax.repository.BibliotecarioRepository;
+import com.example.bibliomax.repository.LivroRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +18,9 @@ public class BibliotecarioService {
 
     @Autowired
     private BibliotecarioRepository bibliotecarioRepository;
+
+    @Autowired
+    private LivroRepository livroRepository;
 
     public Bibliotecario cadastrarBibliotecario(Bibliotecario bibliotecario) {
         return bibliotecarioRepository.save(bibliotecario);
@@ -43,5 +49,12 @@ public class BibliotecarioService {
             bibliotecario.setSenha(bibliotecarioDto.senha());
         }
         return bibliotecario;
+    }
+
+    public Livro cadastrarLivro(Long id, Livro livro) {
+        if(!bibliotecarioRepository.existsById(id)){
+            throw new RuntimeException("Esse usuario não existe!");
+        }
+        return livroRepository.save(livro);
     }
 }
