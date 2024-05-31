@@ -1,15 +1,12 @@
 package com.example.bibliomax.service;
 
-import com.example.bibliomax.DTO.RetornaBibliotecarioDto;
 import com.example.bibliomax.exceptions.ObjectNotFoundException;
 import com.example.bibliomax.model.Bibliotecario;
 import com.example.bibliomax.model.BibliotecarioDto;
 import com.example.bibliomax.repository.BibliotecarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
+
 
 import java.util.List;
 
