@@ -20,8 +20,6 @@ public class Pessoa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
-    private String email;
-    private String senha;
     private String telefone;
     @OneToMany
     private List<Livro> livrosAlugados = new ArrayList<>();

@@ -9,6 +9,6 @@ public record BibliotecarioDto(
 ) {
 
     public Bibliotecario toBibliotecario() {
-        return new Bibliotecario(nome, email, senha, telefone, numeroRegistro);
+        return new Bibliotecario(nome, telefone, numeroRegistro);
     }
 }

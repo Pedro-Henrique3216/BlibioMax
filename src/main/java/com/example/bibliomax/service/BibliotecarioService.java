@@ -42,12 +42,6 @@ public class BibliotecarioService {
         if (bibliotecarioDto.telefone() != null) {
             bibliotecario.setTelefone(bibliotecarioDto.telefone());
         }
-        if (bibliotecarioDto.email() != null) {
-            bibliotecario.setEmail(bibliotecarioDto.email());
-        }
-        if (bibliotecarioDto .senha() != null){
-            bibliotecario.setSenha(bibliotecarioDto.senha());
-        }
         return bibliotecario;
     }
 
