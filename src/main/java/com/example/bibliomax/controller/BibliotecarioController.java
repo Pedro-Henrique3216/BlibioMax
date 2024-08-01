@@ -23,8 +23,9 @@ public class BibliotecarioController {
     private BibliotecarioService bibliotecarioService;
 
     @PostMapping
+    @Transactional
     public ResponseEntity<RetornaBibliotecarioDto> cadastrarBibliotecario(@RequestBody BibliotecarioDto bibliotecarioDto) {
-        Bibliotecario bibliotecario =  bibliotecarioService.cadastrarBibliotecario(bibliotecarioDto.toBibliotecario());
+        Bibliotecario bibliotecario =  bibliotecarioService.cadastrarBibliotecario(bibliotecarioDto);
         return ResponseEntity.status(201).body(new RetornaBibliotecarioDto(bibliotecario));
     }
 

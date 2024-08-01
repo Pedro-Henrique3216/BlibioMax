@@ -13,7 +13,8 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Bibliotecario extends Pessoa{
-    
+
+    @Column(name = "numero_registro", nullable = false)
     private Long numeroRegistro;
 
     public Bibliotecario(String nome, String telefone, Long numeroRegistro) {

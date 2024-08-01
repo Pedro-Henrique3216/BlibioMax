@@ -1,12 +1,10 @@
 package com.example.bibliomax.service;
 
 import com.example.bibliomax.exceptions.ObjectNotFoundException;
-import com.example.bibliomax.model.Bibliotecario;
-import com.example.bibliomax.model.BibliotecarioDto;
-import com.example.bibliomax.model.Livro;
-import com.example.bibliomax.model.LivroDto;
+import com.example.bibliomax.model.*;
 import com.example.bibliomax.repository.BibliotecarioRepository;
 import com.example.bibliomax.repository.LivroRepository;
+import com.example.bibliomax.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +20,14 @@ public class BibliotecarioService {
     @Autowired
     private LivroRepository livroRepository;
 
-    public Bibliotecario cadastrarBibliotecario(Bibliotecario bibliotecario) {
+    @Autowired
+    private UserRepository usuarioRepository;
+
+    public Bibliotecario cadastrarBibliotecario(BibliotecarioDto dto) {
+        User user = new User(dto.email(), dto.telefone(), Role.BIBLIOTECARIO);
+        usuarioRepository.save(user);
+        Bibliotecario bibliotecario = new Bibliotecario(dto.nome(), dto.telefone(), dto.numeroRegistro());
+        bibliotecario.setUser(user);
         return bibliotecarioRepository.save(bibliotecario);
     }
 
