@@ -6,7 +6,7 @@ import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Table(name = "users")
+@Table(name = "pessoas")
 @Entity(name = "user")
 @NoArgsConstructor
 @AllArgsConstructor
@@ -20,6 +20,9 @@ public class Pessoa {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String nome;
+    @OneToOne
+    @JoinColumn(name = "user_id")
+    private User user;
     private String telefone;
     @OneToMany
     private List<Livro> livrosAlugados = new ArrayList<>();
