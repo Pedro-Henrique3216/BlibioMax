@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Table(name = "livro")
+@Table(name = "livros")
 @Getter
 @Setter
 @AllArgsConstructor
@@ -19,11 +19,13 @@ public class Livro {
     private Long id;
     private String titulo;
     private String autor;
+    private Integer quantidade;
     private String editora;
 
-    public Livro(String titulo, String autor, String editora) {
+    public Livro(String titulo, String autor, Integer quantidade, String editora) {
         this.titulo = titulo;
         this.autor = autor;
+        this.quantidade = quantidade;
         this.editora = editora;
     }
 
