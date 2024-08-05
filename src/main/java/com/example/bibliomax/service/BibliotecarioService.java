@@ -1,13 +1,12 @@
 package com.example.bibliomax.service;
 
-import com.example.bibliomax.exceptions.ObjectNotFoundException;
 import com.example.bibliomax.model.*;
 import com.example.bibliomax.repository.BibliotecarioRepository;
-import com.example.bibliomax.repository.LivroRepository;
-import com.example.bibliomax.repository.UserRepository;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 
 import java.util.List;
 
@@ -18,25 +17,24 @@ public class BibliotecarioService {
     private BibliotecarioRepository bibliotecarioRepository;
 
     @Autowired
-    private LivroRepository livroRepository;
+    private LivroService livroService;
 
     @Autowired
-    private UserRepository usuarioRepository;
+    private UserService userService;
 
     public Bibliotecario cadastrarBibliotecario(BibliotecarioDto dto) {
-        User user = new User(dto.email(), dto.telefone(), Role.BIBLIOTECARIO);
-        usuarioRepository.save(user);
+        User user = userService.cadastrarUser(dto.email(), dto.telefone(), Role.BIBLIOTECARIO);
         Bibliotecario bibliotecario = new Bibliotecario(dto.nome(), dto.telefone(), dto.numeroRegistro());
         bibliotecario.setUser(user);
         return bibliotecarioRepository.save(bibliotecario);
     }
 
-    public List<Bibliotecario> listarBibliotecarios() {
-        return bibliotecarioRepository.findAll();
+    public Page<Bibliotecario> listarBibliotecarios(Pageable pageable) {
+        return bibliotecarioRepository.findAll(pageable);
     }
 
     public Bibliotecario buscarBibliotecarioPorId(Long id) {
-        return bibliotecarioRepository.findById(id).orElseThrow(() -> new ObjectNotFoundException("Bibliotecario não encontrado!"));
+        return bibliotecarioRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Bibliotecario não encontrado!"));
     }
 
     public Bibliotecario atualizaBibliotecario(Long id, BibliotecarioDto bibliotecarioDto) {
@@ -50,10 +48,8 @@ public class BibliotecarioService {
         return bibliotecario;
     }
 
-    public Livro cadastrarLivro(Long id, Livro livro) {
-        if(!bibliotecarioRepository.existsById(id)){
-            throw new RuntimeException("Esse usuario não existe!");
-        }
-        return livroRepository.save(livro);
+    public Livro cadastrarLivro(LivroDto livroDto) {
+        return livroService.cadastrarLivro(livroDto.toLivro());
     }
+
 }
