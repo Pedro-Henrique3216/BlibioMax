@@ -1,4 +1,4 @@
-package com.example.bibliomax.DTO;
+package com.example.bibliomax.dto;
 
 import com.example.bibliomax.model.Livro;
 
