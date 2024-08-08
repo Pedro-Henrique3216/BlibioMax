@@ -1,7 +1,6 @@
 package com.example.bibliomax.infra.security;
 
 import com.example.bibliomax.repository.UserRepository;
-import com.example.bibliomax.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,8 +27,8 @@ public class SecurityFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token =  retornaToken(request);
         if(token != null) {
-            String email = tokenService.validarToken(token);
-            UserDetails userDetails = userRepository.findUserByEmail(email);
+            String username = tokenService.validarToken(token);
+            UserDetails userDetails = userRepository.findUserByUsername(username);
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
