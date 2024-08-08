@@ -22,14 +22,16 @@ public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
-    private String email;
-    private String senha;
+    @Column(name = "email")
+    private String username;
+    @Column(name = "senha")
+    private String password;
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    public User(String email, String senha, Role role) {
-        this.email = email;
-        this.senha = senha;
+    public User(String username, String password, Role role) {
+        this.username = username;
+        this.password = password;
         this.role = role;
     }
 
@@ -39,16 +41,6 @@ public class User implements UserDetails {
             return List.of(new SimpleGrantedAuthority("ROLE_BIBLIOTECARIO"), new SimpleGrantedAuthority("ROLE_USER"));
         }
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
-    }
-
-    @Override
-    public String getPassword() {
-        return "";
-    }
-
-    @Override
-    public String getUsername() {
-        return "";
     }
 
     @Override
