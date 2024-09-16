@@ -23,7 +23,7 @@ public class BibliotecarioService {
     private UserService userService;
 
     public Bibliotecario cadastrarBibliotecario(BibliotecarioDto dto) {
-        User user = userService.cadastrarUser(dto.email(), dto.telefone(), Role.BIBLIOTECARIO);
+        User user = userService.cadastrarUser(dto.email(), dto.senha(), Role.BIBLIOTECARIO);
         Bibliotecario bibliotecario = new Bibliotecario(dto.nome(), dto.telefone(), dto.numeroRegistro());
         bibliotecario.setUser(user);
         return bibliotecarioRepository.save(bibliotecario);
