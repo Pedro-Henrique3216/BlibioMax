@@ -22,10 +22,10 @@ public class Livro {
     private Integer quantidade;
     private String editora;
 
-    public Livro(String titulo, String autor, Integer quantidade, String editora) {
+    public Livro(String titulo, String autor, String editora) {
         this.titulo = titulo;
         this.autor = autor;
-        this.quantidade = quantidade;
+        this.quantidade = 0;
         this.editora = editora;
     }
 
