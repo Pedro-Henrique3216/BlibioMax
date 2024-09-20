@@ -3,5 +3,6 @@ create table livros(
     titulo varchar(255) not null unique ,
     autor varchar(255) not null ,
     quantidade int not null,
-    editora varchar(255) not null
+    editora varchar(255) not null,
+    preco double not null
 );
