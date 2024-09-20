@@ -21,12 +21,14 @@ public class Livro {
     private String autor;
     private Integer quantidade;
     private String editora;
+    private Double preco;
 
     public Livro(String titulo, String autor, String editora) {
         this.titulo = titulo;
         this.autor = autor;
         this.quantidade = 0;
         this.editora = editora;
+        this.preco = 0.0;
     }
 
 }
