@@ -23,7 +23,7 @@ class ItensEntradaRepositoryTest {
     @Test
     void existsLivroForItensEntradaInEntrada() {
         BibliotecarioDto dto = new BibliotecarioDto("Joao", "gsdgsd", "12345678", "11912345678", 123L);
-        ItensEntradaDto data = new ItensEntradaDto(12345L, 3, 5L);
+        ItensEntradaDto data = new ItensEntradaDto(3, 200.0, 5L);
         createItensEntrada(data, dto);
         assertTrue(repository.existsLivroForItensEntradaInEntrada(1L, 12345L));
     }
@@ -31,7 +31,7 @@ class ItensEntradaRepositoryTest {
     @Test
     void notExistsLivroForItensEntradaInEntrada() {
         BibliotecarioDto dto = new BibliotecarioDto("Joao", "gsdgsd", "12345678", "11912345678", 123L);
-        ItensEntradaDto data = new ItensEntradaDto(12345L, 3, 5L);
+        ItensEntradaDto data = new ItensEntradaDto(3, 200.0, 5L);
         createItensEntrada(data, dto);
         assertFalse(repository.existsLivroForItensEntradaInEntrada(5L, 12345L));
     }
@@ -46,7 +46,7 @@ class ItensEntradaRepositoryTest {
         this.entityManager.persist(entrada);
         Livro livro = new Livro("Percy", "dafa", "fdfsdf");
         this.entityManager.persist(livro);
-        ItensEntrada itensEntrada = new ItensEntrada(entrada, livro, dto.quantidade());
+        ItensEntrada itensEntrada = new ItensEntrada(entrada, livro, dto.quantidade(), dto.preco());
         entityManager.persist(itensEntrada);
         return itensEntrada;
     }
