@@ -19,7 +19,7 @@ public class EntradaController {
     @Autowired
     EntradaService entradaService;
 
-    @GetMapping("/entrada/add")
+    @PostMapping("/entrada/add")
     @SecurityRequirement(name = "bearer-key")
     public ResponseEntity<RetornoCadastroDto> cadastroEntrada(@RequestBody CadastroEntradaRequest cadastroEntradaRequest) {
         Entrada entrada = entradaService.criarEntrada(cadastroEntradaRequest.entradaDto());
