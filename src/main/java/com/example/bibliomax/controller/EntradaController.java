@@ -4,6 +4,7 @@ import com.example.bibliomax.dto.*;
 import com.example.bibliomax.model.Entrada;
 import com.example.bibliomax.model.EntradaDto;
 import com.example.bibliomax.service.EntradaService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,6 +20,7 @@ public class EntradaController {
     EntradaService entradaService;
 
     @GetMapping("/entrada/add")
+    @SecurityRequirement(name = "bearer-key")
     public ResponseEntity<RetornoCadastroDto> cadastroEntrada(@RequestBody CadastroEntradaRequest cadastroEntradaRequest) {
         Entrada entrada = entradaService.criarEntrada(cadastroEntradaRequest.entradaDto());
         if(cadastroEntradaRequest.itensEntradaDto() != null){
@@ -34,6 +36,7 @@ public class EntradaController {
 
     @PostMapping("/entrada/salvar")
     @Transactional
+    @SecurityRequirement(name = "bearer-key")
     public ResponseEntity<RetornaEntradaItensDto> salvarEntrada(@RequestBody EntradaDto entradaDto) {
         List<RetornaItensDto> dtos = entradaService.saveItensEntrada(entradaDto);
         Entrada entrada = entradaService.buscarEntrada(entradaDto.numeroNota());
@@ -48,6 +51,7 @@ public class EntradaController {
     }
 
     @GetMapping("/entrada")
+    @SecurityRequirement(name = "bearer-key")
     public ResponseEntity<RetornaEntradaItensDto> buscarEntrada(@RequestParam(value = "numero_da_nota") Long numeroNota) {
         List<RetornaItensDto> dtos = entradaService.buscaTodosItensEntradas(numeroNota);
         Entrada entrada = entradaService.buscarEntrada(numeroNota);
