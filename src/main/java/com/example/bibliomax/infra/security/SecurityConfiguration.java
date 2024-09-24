@@ -29,7 +29,12 @@ public class SecurityConfiguration {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers(HttpMethod.POST, "/login").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/livro").permitAll()
                         .requestMatchers(HttpMethod.POST, "/bibliotecario/cadastrarLivro").hasRole("BIBLIOTECARIO")
+                        .requestMatchers(HttpMethod.GET, "/administrativo/entrada/add").hasRole("BIBLIOTECARIO")
+                        .requestMatchers(HttpMethod.POST, "/administrativo/entrada/salvar").hasRole("BIBLIOTECARIO")
+                        .requestMatchers(HttpMethod.GET, "/administrativo/entrada").hasRole("BIBLIOTECARIO")
+                        .requestMatchers(HttpMethod.DELETE, "/livro").hasRole("BIBLIOTECARIO")
                         .requestMatchers(HttpMethod.POST, "/bibliotecario").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
                         .anyRequest().authenticated())
