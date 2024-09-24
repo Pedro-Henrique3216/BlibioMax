@@ -40,7 +40,6 @@ public class EntradaController {
     public ResponseEntity<RetornaEntradaItensDto> salvarEntrada(@RequestBody EntradaDto entradaDto) {
         List<RetornaItensDto> dtos = entradaService.saveItensEntrada(entradaDto);
         Entrada entrada = entradaService.buscarEntrada(entradaDto.numeroNota());
-        System.out.println(dtos);
         return ResponseEntity.ok(new RetornaEntradaItensDto(
                 new RetornaEntradaDto(entradaDto.numeroNota()),
                 entrada.getDataEntrada(),
