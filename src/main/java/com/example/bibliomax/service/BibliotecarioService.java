@@ -1,5 +1,6 @@
 package com.example.bibliomax.service;
 
+import com.example.bibliomax.exceptions.ObjetoNaoEncontrado;
 import com.example.bibliomax.model.*;
 import com.example.bibliomax.repository.BibliotecarioRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -32,7 +33,7 @@ public class BibliotecarioService {
     }
 
     public Bibliotecario buscarBibliotecarioPorId(Long id) {
-        return bibliotecarioRepository.findById(id).orElseThrow(() -> new EntityNotFoundException("Bibliotecario não encontrado!"));
+        return bibliotecarioRepository.findById(id).orElseThrow(() -> new ObjetoNaoEncontrado("Bibliotecario não encontrado!"));
     }
 
     public Bibliotecario atualizaBibliotecario(Long id, BibliotecarioDto bibliotecarioDto) {

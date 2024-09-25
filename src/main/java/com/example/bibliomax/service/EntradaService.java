@@ -1,11 +1,11 @@
 package com.example.bibliomax.service;
 
 import com.example.bibliomax.dto.RetornaItensDto;
+import com.example.bibliomax.exceptions.EntradaJaConcluida;
+import com.example.bibliomax.exceptions.ObjetoNaoEncontrado;
 import com.example.bibliomax.model.*;
 import com.example.bibliomax.repository.EntradaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -36,7 +36,7 @@ public class EntradaService {
         if(entrada.getStatus() != StatusEntrada.CONCLUIDO){
             itensEntradaService.addItensEntrada(entrada, itensEntradaDto);
         } else {
-            throw new RuntimeException("Essa entrada ja esta concluida");
+            throw new EntradaJaConcluida("Essa entrada ja esta concluida");
         }
     }
 
@@ -45,7 +45,7 @@ public class EntradaService {
     }
 
     public Entrada buscarEntrada(Long numeroNota) {
-        return repository.findById(numeroNota).orElseThrow(() -> new RuntimeException("Entrada não encontrada"));
+        return repository.findById(numeroNota).orElseThrow(() -> new ObjetoNaoEncontrado("Entrada não encontrada"));
     }
 
     public List<RetornaItensDto> saveItensEntrada(EntradaDto entradaDto){

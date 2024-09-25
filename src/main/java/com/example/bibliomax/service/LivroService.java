@@ -1,6 +1,8 @@
 package com.example.bibliomax.service;
 
 import com.example.bibliomax.dto.RetornaLivroDto;
+import com.example.bibliomax.exceptions.JaCadastrado;
+import com.example.bibliomax.exceptions.ObjetoNaoEncontrado;
 import com.example.bibliomax.model.Livro;
 import com.example.bibliomax.model.LivroDto;
 import com.example.bibliomax.repository.LivroRepository;
@@ -18,14 +20,14 @@ public class LivroService {
 
     public Livro cadastrarLivro(LivroDto livroDto) {
         if(existeLivroComTitulo(livroDto.titulo())){
-            throw new RuntimeException("Esse livro ja esta cadastrado");
+            throw new JaCadastrado("Esse livro ja esta cadastrado");
         }
         Livro livro = livroDto.toLivro();
         return repository.save(livro);
     }
 
     public Livro buscarLivroPorId(Long id) {
-        return repository.findById(id).orElseThrow(() -> new EntityNotFoundException("Livro não encontrado"));
+        return repository.findById(id).orElseThrow(() -> new ObjetoNaoEncontrado("Livro não encontrado"));
 
     }
 
