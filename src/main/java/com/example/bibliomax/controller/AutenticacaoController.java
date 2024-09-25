@@ -4,6 +4,7 @@ import com.example.bibliomax.dto.TokenDto;
 import com.example.bibliomax.infra.security.TokenService;
 import com.example.bibliomax.model.User;
 import com.example.bibliomax.model.UserDto;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -23,7 +24,7 @@ public class AutenticacaoController {
 
 
     @PostMapping
-    public ResponseEntity<TokenDto> logar(@RequestBody UserDto userDto){
+    public ResponseEntity<TokenDto> logar(@RequestBody @Valid UserDto userDto){
         UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDto.email(), userDto.senha());
         Authentication authentication = authenticationManager.authenticate(auth);
         String token = tokenService.generateToken((User) authentication.getPrincipal());

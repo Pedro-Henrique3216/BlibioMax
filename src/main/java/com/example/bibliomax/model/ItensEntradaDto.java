@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotNull;
 public record ItensEntradaDto(
         Integer quantidade,
         Double preco,
-        @NotNull
+        @NotNull(message = "id do livro não pode estar vazio")
         @JsonProperty("livro_id")
         Long livroId
 ) {

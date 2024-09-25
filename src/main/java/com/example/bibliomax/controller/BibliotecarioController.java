@@ -8,6 +8,7 @@ import com.example.bibliomax.model.Livro;
 import com.example.bibliomax.model.LivroDto;
 import com.example.bibliomax.service.BibliotecarioService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,7 +28,7 @@ public class BibliotecarioController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<RetornaBibliotecarioDto> cadastrarBibliotecario(@RequestBody BibliotecarioDto bibliotecarioDto, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<RetornaBibliotecarioDto> cadastrarBibliotecario(@RequestBody @Valid BibliotecarioDto bibliotecarioDto, UriComponentsBuilder uriBuilder) {
         Bibliotecario bibliotecario =  bibliotecarioService.cadastrarBibliotecario(bibliotecarioDto);
         URI uri = uriBuilder.path("/bibliotecario/{id}").buildAndExpand(bibliotecario.getId()).toUri();
         return ResponseEntity.created(uri).body(new RetornaBibliotecarioDto(bibliotecario));
@@ -50,14 +51,14 @@ public class BibliotecarioController {
     @SecurityRequirement(name = "bearer-key")
     @PutMapping("/{id}")
     @Transactional
-    public ResponseEntity<RetornaBibliotecarioDto> atualizaBibliotecario(@PathVariable Long id, @RequestBody BibliotecarioDto bibliotecarioDto) {
+    public ResponseEntity<RetornaBibliotecarioDto> atualizaBibliotecario(@PathVariable Long id, @RequestBody @Valid BibliotecarioDto bibliotecarioDto) {
         Bibliotecario bibliotecario = bibliotecarioService.atualizaBibliotecario(id, bibliotecarioDto);
         return ResponseEntity.ok(new RetornaBibliotecarioDto(bibliotecario));
     }
 
     @SecurityRequirement(name = "bearer-key")
     @PostMapping("/cadastrarLivro")
-    public ResponseEntity<RetornaLivroDto> cadastraLivro(@RequestBody LivroDto livroDto, UriComponentsBuilder uriBuilder){
+    public ResponseEntity<RetornaLivroDto> cadastraLivro(@RequestBody @Valid LivroDto livroDto, UriComponentsBuilder uriBuilder){
         Livro livro = bibliotecarioService.cadastrarLivro(livroDto);
         URI uri = uriBuilder.path("/bibliotecario/cadastrarLivro/{id}").buildAndExpand(livro.getId()).toUri();
         return ResponseEntity.created(uri).body(new RetornaLivroDto(livro));
