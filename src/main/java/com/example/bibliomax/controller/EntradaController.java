@@ -27,7 +27,6 @@ public class EntradaController {
         if(cadastroEntradaRequest.itensEntradaDto() != null){
             entradaService.addItensEntrada(entrada, cadastroEntradaRequest.itensEntradaDto());
         }
-        System.out.println(entradaService.buscarItensEntradas(entrada));
         return ResponseEntity.ok(new RetornoCadastroDto(new RetornaEntradaDto(cadastroEntradaRequest.entradaDto().numeroNota()),
                 entradaService.buscarItensEntradas(entrada)
                         .stream()
