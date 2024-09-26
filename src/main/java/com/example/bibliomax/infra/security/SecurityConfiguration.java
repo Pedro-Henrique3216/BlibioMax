@@ -34,6 +34,8 @@ public class SecurityConfiguration {
                         .requestMatchers(HttpMethod.GET, "/administrativo/entrada/add").hasRole("BIBLIOTECARIO")
                         .requestMatchers(HttpMethod.POST, "/administrativo/entrada/salvar").hasRole("BIBLIOTECARIO")
                         .requestMatchers(HttpMethod.GET, "/administrativo/entrada").hasRole("BIBLIOTECARIO")
+                        .requestMatchers(HttpMethod.GET, "/administrativo/estoque").hasRole("BIBLIOTECARIO")
+                        .requestMatchers(HttpMethod.GET, "/administrativo/estoque/acabando").hasRole("BIBLIOTECARIO")
                         .requestMatchers(HttpMethod.DELETE, "/livro").hasRole("BIBLIOTECARIO")
                         .requestMatchers(HttpMethod.POST, "/bibliotecario").permitAll()
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui.html", "/swagger-ui/**").permitAll()
