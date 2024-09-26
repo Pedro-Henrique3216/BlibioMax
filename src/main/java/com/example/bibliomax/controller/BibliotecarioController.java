@@ -28,7 +28,7 @@ public class BibliotecarioController {
 
     @PostMapping
     @Transactional
-    public ResponseEntity<RetornaBibliotecarioDto> cadastrarBibliotecario(@RequestBody @Valid BibliotecarioDto bibliotecarioDto, UriComponentsBuilder uriBuilder) {
+    public ResponseEntity<RetornaBibliotecarioDto> cadastrarBibliotecario(@Valid @RequestBody BibliotecarioDto bibliotecarioDto, UriComponentsBuilder uriBuilder) {
         Bibliotecario bibliotecario =  bibliotecarioService.cadastrarBibliotecario(bibliotecarioDto);
         URI uri = uriBuilder.path("/bibliotecario/{id}").buildAndExpand(bibliotecario.getId()).toUri();
         return ResponseEntity.created(uri).body(new RetornaBibliotecarioDto(bibliotecario));
