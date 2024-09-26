@@ -1,10 +1,7 @@
 package com.example.bibliomax.service;
 
 import com.example.bibliomax.dto.RetornaItensDto;
-import com.example.bibliomax.model.Entrada;
-import com.example.bibliomax.model.ItensEntrada;
-import com.example.bibliomax.model.ItensEntradaDto;
-import com.example.bibliomax.model.Livro;
+import com.example.bibliomax.model.*;
 import com.example.bibliomax.repository.ItensEntradaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +17,9 @@ public class ItensEntradaService {
 
     @Autowired
     private LivroService livroService;
+
+    @Autowired
+    private ItensEstoqueService itensEstoqueService;
 
     private List<ItensEntrada> itensEntradas = new ArrayList<>();
 
@@ -54,7 +54,10 @@ public class ItensEntradaService {
         List<ItensEntrada> listItensEntradas = buscarItensEntradas(entrada);
         for (ItensEntrada item : listItensEntradas) {
             entrada.setValorTotal(item.getValorTotal());
+            Livro livro = item.getLivro();
+            livro.setPreco(item.getPreco());
         }
+        itensEstoqueService.addEstoque(listItensEntradas);
         repository.saveAll(listItensEntradas);
         itensEntradas.removeAll(listItensEntradas);
     }
