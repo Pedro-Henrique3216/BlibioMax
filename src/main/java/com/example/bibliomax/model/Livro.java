@@ -17,14 +17,12 @@ public class Livro {
     private Long id;
     private String titulo;
     private String autor;
-    private Integer quantidade;
     private String editora;
     private Double preco;
 
     public Livro(String titulo, String autor, String editora) {
         this.titulo = titulo;
         this.autor = autor;
-        this.quantidade = 0;
         this.editora = editora;
         this.preco = 0.0;
     }
