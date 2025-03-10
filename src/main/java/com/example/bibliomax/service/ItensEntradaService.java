@@ -12,16 +12,20 @@ import java.util.List;
 @Service
 public class ItensEntradaService {
 
-    @Autowired
-    private ItensEntradaRepository repository;
+    private final ItensEntradaRepository repository;
+
+    private final LivroService livroService;
+
+    private final ItensEstoqueService itensEstoqueService;
+
+    private final List<ItensEntrada> itensEntradas = new ArrayList<>();
 
     @Autowired
-    private LivroService livroService;
-
-    @Autowired
-    private ItensEstoqueService itensEstoqueService;
-
-    private List<ItensEntrada> itensEntradas = new ArrayList<>();
+    public ItensEntradaService(ItensEntradaRepository repository, LivroService livroService, ItensEstoqueService itensEstoqueService) {
+        this.repository = repository;
+        this.livroService = livroService;
+        this.itensEstoqueService = itensEstoqueService;
+    }
 
     public void addItensEntrada(Entrada entrada, ItensEntradaDto itensEntradaDto) {
         Livro livro = livroService.buscarLivroPorId(itensEntradaDto.livroId());
@@ -56,6 +60,7 @@ public class ItensEntradaService {
             entrada.setValorTotal(item.getValorTotal());
             Livro livro = item.getLivro();
             livro.setPreco(item.getPreco());
+            livroService.updateLivro(livro);
         }
         itensEstoqueService.addEstoque(listItensEntradas);
         repository.saveAll(listItensEntradas);

@@ -6,7 +6,6 @@ import com.example.bibliomax.exceptions.ObjetoNaoEncontrado;
 import com.example.bibliomax.model.Livro;
 import com.example.bibliomax.model.LivroDto;
 import com.example.bibliomax.repository.LivroRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,11 +14,15 @@ import org.springframework.stereotype.Service;
 @Service
 public class LivroService {
 
+    private final LivroRepository repository;
+
     @Autowired
-    private LivroRepository repository;
+    public LivroService(LivroRepository repository) {
+        this.repository = repository;
+    }
 
     public Livro cadastrarLivro(LivroDto livroDto) {
-        if(existeLivroComTitulo(livroDto.titulo())){
+        if(repository.existsByTitulo(livroDto.titulo())){
             throw new JaCadastrado("Esse livro ja esta cadastrado");
         }
         Livro livro = livroDto.toLivro();
@@ -31,15 +34,15 @@ public class LivroService {
 
     }
 
-    private Boolean existeLivroComTitulo(String titulo) {
-        return repository.existsByTitulo(titulo);
-    }
-
     public Page<RetornaLivroDto> listarLivros(Pageable pageable) {
         return repository.findAll(pageable).map(RetornaLivroDto::new);
     }
 
     public void deletarLivroById(Long id) {
         repository.deleteById(id);
+    }
+
+    public void updateLivro(Livro livro) {
+        repository.save(livro);
     }
 }
