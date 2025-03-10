@@ -12,14 +12,18 @@ import org.springframework.stereotype.Service;
 @Service
 public class BibliotecarioService {
 
-    @Autowired
-    private BibliotecarioRepository bibliotecarioRepository;
+    private final BibliotecarioRepository bibliotecarioRepository;
+
+    private final LivroService livroService;
+
+    private final UserService userService;
 
     @Autowired
-    private LivroService livroService;
-
-    @Autowired
-    private UserService userService;
+    public BibliotecarioService(BibliotecarioRepository bibliotecarioRepository, LivroService livroService, UserService userService) {
+        this.bibliotecarioRepository = bibliotecarioRepository;
+        this.livroService = livroService;
+        this.userService = userService;
+    }
 
     public Bibliotecario cadastrarBibliotecario(BibliotecarioDto dto) {
         User user = userService.cadastrarUser(dto.email(), dto.senha(), Role.BIBLIOTECARIO);
@@ -49,6 +53,10 @@ public class BibliotecarioService {
 
     public Livro cadastrarLivro(LivroDto livroDto) {
         return livroService.cadastrarLivro(livroDto);
+    }
+
+    public Bibliotecario findByUsername(String username) {
+        return bibliotecarioRepository.findByUserUsername(username);
     }
 
 }

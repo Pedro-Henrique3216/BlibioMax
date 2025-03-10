@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface BibliotecarioRepository extends JpaRepository<Bibliotecario, Long> {
+
+    Bibliotecario findByUserUsername(String username);
 }
