@@ -10,6 +10,8 @@ public interface ItensEstoqueRepository extends JpaRepository<ItensEstoque, Long
 
     boolean existsByLivro(Livro livro);
 
-    ItensEstoque findByLivro(Livro livro);
+    ItensEstoque findByLivroId(Long id);
+
+
 
 }

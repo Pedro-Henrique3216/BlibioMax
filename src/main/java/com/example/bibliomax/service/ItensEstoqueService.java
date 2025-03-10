@@ -8,21 +8,30 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 public class ItensEstoqueService {
 
+
+     private final ItensEstoqueRepository repository;
+    private final ItensEstoqueRepository itensEstoqueRepository;
+
     @Autowired
-    private ItensEstoqueRepository repository;
+    public ItensEstoqueService(ItensEstoqueRepository repository, ItensEstoqueRepository itensEstoqueRepository) {
+        this.repository = repository;
+        this.itensEstoqueRepository = itensEstoqueRepository;
+    }
 
 
+    @Transactional
     public void addEstoque(List<ItensEntrada> itensEntradas) {
        for (ItensEntrada entrada : itensEntradas) {
            if (repository.existsByLivro(entrada.getLivro())) {
-                ItensEstoque itensEstoque = repository.findByLivro(entrada.getLivro());
-                itensEstoque.setQuantidade(entrada.getQuantidade());
+                ItensEstoque itensEstoque = repository.findByLivroId(entrada.getLivro().getId());
+                itensEstoque.aumentar(entrada.getQuantidade());
                 repository.save(itensEstoque);
            } else {
                ItensEstoque itensEstoque = new ItensEstoque(entrada.getLivro(), entrada.getQuantidade());
@@ -38,6 +47,10 @@ public class ItensEstoqueService {
                 itensEstoque.getMinimoQuantidade()));
     }
 
+    public Integer getItensEstoque(Long livroId) {
+        return repository.findByLivroId(livroId).getQuantidade();
+    }
+
     public List<ItensEstoqueDto> produtoAbaixoMinimo(){
         List<ItensEstoque> itensEstoque = repository.findAll();
         return itensEstoque.stream()
@@ -47,5 +60,11 @@ public class ItensEstoqueService {
                         item.getQuantidade(),
                         item.getMinimoQuantidade()))
                 .toList();
+    }
+    @Transactional
+    public void removeItensEstoque(Long id, Integer quantity) {
+        ItensEstoque itensEstoque = repository.findByLivroId(id);
+        itensEstoque.diminuir(quantity);
+        itensEstoqueRepository.save(itensEstoque);
     }
 }
