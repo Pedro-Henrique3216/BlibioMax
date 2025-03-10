@@ -59,7 +59,7 @@ class PedidoControllerTest {
 
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         Pessoa person = new Pessoa();
         person.setUser(new User("test@gmail.com", "12345678", Role.USER));
 

@@ -3,7 +3,6 @@ package com.example.bibliomax.service;
 import com.example.bibliomax.exceptions.ObjetoNaoEncontrado;
 import com.example.bibliomax.model.*;
 import com.example.bibliomax.repository.BibliotecarioRepository;
-import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

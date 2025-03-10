@@ -32,13 +32,12 @@ class PedidoPagamentoServiceTest {
     @InjectMocks
     private PedidoPagamentoService service;
 
-    private Pessoa person;
     private Pedido order;
     private Pagamento payment;
 
     @BeforeEach
     void setUp() {
-        person = new Pessoa();
+        Pessoa person = new Pessoa();
         person.setUser(new User("testUser", "12345678", Role.USER));
         payment = new Pagamento(TipoPagamento.PIX ,20.0);
         order = new Pedido(payment, person, TipoPedido.COMPRA, 20.0);
