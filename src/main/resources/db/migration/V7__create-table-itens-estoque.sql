@@ -3,5 +3,6 @@ create table itens_estoque(
     livro_id bigint,
     quantidade int,
     minimo_quantidade int,
-    foreign key (livro_id) references livros(id)
+    foreign key (livro_id) references livros(id),
+    version BIGINT
 )

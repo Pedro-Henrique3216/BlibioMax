@@ -24,12 +24,19 @@ public class ItensEstoque {
     @Column(name = "minimo_quantidade")
     private Integer minimoQuantidade = 5;
 
+    @Version
+    private Long version;
+
     public ItensEstoque(Livro livro, Integer quantidade) {
         this.livro = livro;
         this.quantidade = quantidade;
     }
 
-    public void setQuantidade(Integer quantidade) {
+    public void diminuir(Integer quantidade) {
+        this.quantidade -= quantidade;
+    }
+
+    public void aumentar(Integer quantidade) {
         this.quantidade += quantidade;
     }
 }
