@@ -22,7 +22,7 @@ public class LivroController {
     }
 
     @SecurityRequirement(name = "bearer-key")
-    @DeleteMapping
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarLivro(@RequestParam Long id) {
         livroService.deletarLivroById(id);
         return ResponseEntity.noContent().build();
