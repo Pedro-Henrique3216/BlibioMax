@@ -8,6 +8,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,12 +20,12 @@ import java.util.List;
 public class EntradaController {
 
     @Autowired
-    EntradaService entradaService;
+    private EntradaService entradaService;
 
     @PostMapping("/entrada/add")
     @SecurityRequirement(name = "bearer-key")
-    public ResponseEntity<RetornoCadastroDto> cadastroEntrada(@RequestBody @Valid CadastroEntradaRequest cadastroEntradaRequest) {
-        Entrada entrada = entradaService.criarEntrada(cadastroEntradaRequest.entradaDto());
+    public ResponseEntity<RetornoCadastroDto> cadastroEntrada(@RequestBody @Valid CadastroEntradaRequest cadastroEntradaRequest, @AuthenticationPrincipal UserDetails userDetails) {
+        Entrada entrada = entradaService.criarEntrada(cadastroEntradaRequest.entradaDto(), userDetails);
         if(cadastroEntradaRequest.itensEntradaDto() != null){
             entradaService.addItensEntrada(entrada, cadastroEntradaRequest.itensEntradaDto());
         }
@@ -37,8 +39,8 @@ public class EntradaController {
     @PostMapping("/entrada/salvar")
     @Transactional
     @SecurityRequirement(name = "bearer-key")
-    public ResponseEntity<RetornaEntradaItensDto> salvarEntrada(@RequestBody @Valid EntradaDto entradaDto) {
-        List<RetornaItensDto> dtos = entradaService.saveItensEntrada(entradaDto);
+    public ResponseEntity<RetornaEntradaItensDto> salvarEntrada(@RequestBody @Valid EntradaDto entradaDto, @AuthenticationPrincipal UserDetails userDetails) {
+        List<RetornaItensDto> dtos = entradaService.saveItensEntrada(entradaDto, userDetails);
         Entrada entrada = entradaService.buscarEntrada(entradaDto.numeroNota());
         return ResponseEntity.status(201).body(new RetornaEntradaItensDto(
                 new RetornaEntradaDto(entradaDto.numeroNota()),
