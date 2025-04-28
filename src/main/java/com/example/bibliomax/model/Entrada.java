@@ -3,7 +3,7 @@ package com.example.bibliomax.model;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "entrada")
@@ -21,7 +21,7 @@ public class Entrada {
     @Column(name = "valor_total")
     private Double valorTotal = 0.0;
     @Column(name = "data_entrada")
-    private LocalDate dataEntrada;
+    private LocalDateTime dataEntrada;
     @Setter
     @Enumerated(EnumType.STRING)
     StatusEntrada status = StatusEntrada.EM_ANDAMENTO;
@@ -29,7 +29,7 @@ public class Entrada {
     public Entrada(Long numeroNota, Bibliotecario bibliotecario) {
         this.numeroNota = numeroNota;
         this.bibliotecario = bibliotecario;
-        dataEntrada = LocalDate.now();
+        dataEntrada = LocalDateTime.now();
     }
 
     public void setValorTotal(Double valorTotal) {
