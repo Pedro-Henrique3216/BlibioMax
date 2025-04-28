@@ -5,7 +5,7 @@ import com.example.bibliomax.dto.ItensPedidoResponse;
 import com.example.bibliomax.dto.PedidoRequest;
 import com.example.bibliomax.dto.PedidoResponse;
 import com.example.bibliomax.model.*;
-import com.example.bibliomax.service.PedidoService;
+import com.example.bibliomax.service.RentalOrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,8 +18,10 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.MediaType;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -32,28 +34,29 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class PedidoControllerTest {
+@ActiveProfiles("test")
+class RentalOrderControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private PedidoService orderService;
+    private RentalOrderService rentalOrderService;
 
     @Autowired
     private ObjectMapper jacksonObjectMapper;
 
     private PedidoRequest orderRequest;
 
-    private Pedido order;
+    private RentalOrder order;
 
     private PedidoResponse orderResponse;
 
     @TestConfiguration
     static class TestConfig {
         @Bean
-        public PedidoService pedidoService() {
-            return mock(PedidoService.class);
+        public RentalOrderService rentalOrderService() {
+            return mock(RentalOrderService.class);
         }
     }
 
@@ -67,21 +70,20 @@ class PedidoControllerTest {
         book.setId(1L);
         book.setPreco(50.0);
 
-        orderRequest = new PedidoRequest(TipoPagamento.PIX, TipoPedido.COMPRA, List.of(
-                new ItensPedidoRequest(1L, 2)
-        ));
+        orderRequest = new PedidoRequest(
+                List.of(new ItensPedidoRequest(1L)
+                ));
 
-        Pagamento payment = new Pagamento(TipoPagamento.PIX, 100.00);
-        order = new Pedido(payment, person, TipoPedido.COMPRA, 100.0);
+        order = new RentalOrder(null, person);
         order.setId(1L);
 
-        ItensPedido itens = new ItensPedido(new ItensPedidoPK(book, order), 2, 100.0);
+        RentalItem itens = new RentalItem(new ItensPedidoPK(book, order));
         order.addItensPedido(itens);
 
-        orderResponse = new PedidoResponse(TipoPagamento.PIX, TipoPedido.COMPRA, List.of(
-                new ItensPedidoResponse(book.getTitulo(), 2, 100.0)), 100.0, StatusPedido.CRIADO);
+        orderResponse = new PedidoResponse(List.of(
+                new ItensPedidoResponse(book.getTitulo(), 1)), BigDecimal.ZERO, StatusRental.CRIADO);
 
-        Mockito.reset(orderService);
+        Mockito.reset(rentalOrderService);
     }
 
 
@@ -89,7 +91,7 @@ class PedidoControllerTest {
     @WithMockUser(username = "test@gmail.com", roles = "USER")
     void shouldSaveOrderWhenUserIsAuthenticated() throws Exception {
 
-        when(orderService.saveOrder(any(PedidoRequest.class), any(String.class))).thenReturn(order);
+        when(rentalOrderService.saveOrder(any(PedidoRequest.class), any(String.class))).thenReturn(order);
 
         mockMvc.perform(post("/pedido")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -110,7 +112,7 @@ class PedidoControllerTest {
     @WithMockUser(username = "test@gmail.com", roles = "USER")
     void shouldGetOrderByIdWhenUserIsAuthenticated() throws Exception {
 
-        when(orderService.findById(1L, "test@gmail.com")).thenReturn(order);
+        when(rentalOrderService.findById(1L, "test@gmail.com")).thenReturn(order);
 
         String string = mockMvc.perform(get("/pedido/{id}", 1L))
                 .andExpect(status().isOk())
@@ -123,7 +125,7 @@ class PedidoControllerTest {
     @WithMockUser(username = "test@gmail.com", roles = "USER")
     void shouldReturnForbiddenWhenUserTriesToAccessAnotherUsersOrder() throws Exception {
 
-        when(orderService.findById(1L, "test@gmail.com")).thenThrow(new AccessDeniedException("You do not have permission to access this order"));
+        when(rentalOrderService.findById(1L, "test@gmail.com")).thenThrow(new AccessDeniedException("You do not have permission to access this order"));
 
        mockMvc.perform(get("/pedido/{id}", 1L))
                 .andExpect(status().isForbidden());
@@ -134,7 +136,7 @@ class PedidoControllerTest {
     @WithMockUser(username = "test@gmail.com", roles = "USER")
     void shouldGetAllOrderWhenUserIsAuthenticated() throws Exception {
 
-        when(orderService.findAll("test@gmail.com")).thenReturn(List.of(order));
+        when(rentalOrderService.findAll("test@gmail.com")).thenReturn(List.of(order));
 
         String string = mockMvc.perform(get("/pedido"))
                 .andExpect(status().isOk())

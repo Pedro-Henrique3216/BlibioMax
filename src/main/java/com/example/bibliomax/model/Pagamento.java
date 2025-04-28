@@ -22,7 +22,7 @@ public class Pagamento {
     private Double valor;
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pedido_id")
-    private Pedido pedido;
+    private RentalOrder rentalOrder;
     @Column(name = "data_criacao")
     private LocalDateTime dataCriacao = LocalDateTime.now();
     @Column(name = "data_pagamento")

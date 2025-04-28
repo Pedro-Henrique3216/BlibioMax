@@ -5,14 +5,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.*;
 
-import java.io.Serializable;
-
 @NoArgsConstructor
 @AllArgsConstructor
 @Embeddable
 @Getter
 @Setter
-@EqualsAndHashCode(of = {"livro", "pedido"})
+@EqualsAndHashCode(of = {"livro", "rentalOrder"})
 public class ItensPedidoPK {
 
     @ManyToOne
@@ -20,6 +18,6 @@ public class ItensPedidoPK {
     private Livro livro;
     @ManyToOne
     @JoinColumn(name = "pedido_id")
-    private Pedido pedido;
+    private RentalOrder rentalOrder;
 
 }

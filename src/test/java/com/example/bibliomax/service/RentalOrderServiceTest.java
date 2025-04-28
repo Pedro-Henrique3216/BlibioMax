@@ -24,7 +24,7 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class PedidoServiceTest {
+class RentalOrderServiceTest {
 
     @Mock
     private PedidoRepository orderRepository;
@@ -36,7 +36,7 @@ class PedidoServiceTest {
     private PessoaService personService;
 
     @Mock
-    private ItensPedidoService orderItemService;
+    private RentalItemService orderItemService;
 
     @Mock
     private ItensEstoqueService stockItemService;
@@ -48,10 +48,10 @@ class PedidoServiceTest {
     private EmailRequestSuccess emailRequestSuccess;
 
     @InjectMocks
-    private PedidoService pedidoService;
+    private RentalOrderService rentalOrderService;
 
     private Pessoa pessoa;
-    private Pedido pedido;
+    private RentalOrder rentalOrder;
     private Livro livro;
     private PedidoRequest pedidoRequest;
 
@@ -64,12 +64,12 @@ class PedidoServiceTest {
         livro.setId(1L);
         livro.setPreco(50.0);
 
-        pedidoRequest = new PedidoRequest(TipoPagamento.PIX, TipoPedido.COMPRA, List.of(
-                new ItensPedidoRequest(1L, 2)
+        pedidoRequest = new PedidoRequest(List.of(
+                new ItensPedidoRequest(1L)
         ));
 
-        pedido = new Pedido();
-        pedido.setPessoa(pessoa);
+        rentalOrder = new RentalOrder();
+        rentalOrder.setPerson(pessoa);
     }
 
     @Test
@@ -77,50 +77,50 @@ class PedidoServiceTest {
         when(personService.findByUsername(anyString())).thenReturn(pessoa);
         when(bookService.buscarLivroPorId(anyLong())).thenReturn(livro);
         when(stockItemService.getItensEstoque(anyLong())).thenReturn(10);
-        when(orderRepository.save(any(Pedido.class))).thenReturn(pedido);
+        when(orderRepository.save(any(RentalOrder.class))).thenReturn(rentalOrder);
         doNothing().when(stockItemService).removeItensEstoque(anyLong(), anyInt());
         doNothing().when(emailRequestSuccess).sendEmail(any(), any());
 
-        Pedido result = pedidoService.saveOrder(pedidoRequest, "testUser");
+        RentalOrder result = rentalOrderService.saveOrder(pedidoRequest, "testUser");
 
         assertNotNull(result);
-        verify(orderRepository, atLeastOnce()).save(any(Pedido.class));
+        verify(orderRepository, atLeastOnce()).save(any(RentalOrder.class));
     }
 
     @Test
     void saveOrder_Fail_StockUnavailable() {
-        when(stockItemService.getItensEstoque(anyLong())).thenReturn(1);
+        when(stockItemService.getItensEstoque(anyLong())).thenReturn(0);
         assertThrows(QuantidadeObjetoNaoEncotrado.class, () ->
-                pedidoService.saveOrder(pedidoRequest, "testUser"));
+                rentalOrderService.saveOrder(pedidoRequest, "testUser"));
     }
 
 
     @Test
     void findById_Success() {
-        when(orderRepository.findById(anyLong())).thenReturn(Optional.of(pedido));
-        Pedido result = pedidoService.findById(1L, "testUser");
-        assertEquals(pedido, result);
+        when(orderRepository.findById(anyLong())).thenReturn(Optional.of(rentalOrder));
+        RentalOrder result = rentalOrderService.findById(1L, "testUser");
+        assertEquals(rentalOrder, result);
     }
 
     @Test
     void findById_Fall_UserNotAuthorized() {
-        when(orderRepository.findById(anyLong())).thenReturn(Optional.of(pedido));
+        when(orderRepository.findById(anyLong())).thenReturn(Optional.of(rentalOrder));
 
-        assertThrows(AccessDeniedException.class, () -> pedidoService.findById(1L, "Caio"));
+        assertThrows(AccessDeniedException.class, () -> rentalOrderService.findById(1L, "Caio"));
     }
 
     @Test
     void findById_Fail_NotFound() {
         when(orderRepository.findById(anyLong())).thenReturn(Optional.empty());
-        assertThrows(ObjetoNaoEncontrado.class, () -> pedidoService.findById(1L, "testUser"));
+        assertThrows(ObjetoNaoEncontrado.class, () -> rentalOrderService.findById(1L, "testUser"));
     }
 
     @Test
     void findByDate_Success() {
         when(personService.findByUsername(anyString())).thenReturn(pessoa);
-        when(orderRepository.findAllByDatePedidoBetweenAndPessoa(any(), any(), any()))
-                .thenReturn(List.of(pedido));
-        List<Pedido> result = pedidoService.findByDate(LocalDate.now(), "testUser");
+        when(orderRepository.findAllByOrderDateBetweenAndPerson(any(), any(), any()))
+                .thenReturn(List.of(rentalOrder));
+        List<RentalOrder> result = rentalOrderService.findByDate(LocalDate.now(), "testUser");
         assertFalse(result.isEmpty());
     }
 }

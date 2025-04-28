@@ -2,10 +2,14 @@ package com.example.bibliomax.service;
 
 import com.example.bibliomax.dto.RetornaItensDto;
 import com.example.bibliomax.model.*;
+import com.example.bibliomax.repository.ItensEntradaRedisRepository;
 import com.example.bibliomax.repository.ItensEntradaRepository;
+import com.example.bibliomax.repository.ItensEstoqueRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.naming.OperationNotSupportedException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,53 +22,53 @@ public class ItensEntradaService {
 
     private final ItensEstoqueService itensEstoqueService;
 
-    private final List<ItensEntrada> itensEntradas = new ArrayList<>();
+    private final ItensEntradaRedisRepository itensEntradaRedisRepository;
 
     @Autowired
-    public ItensEntradaService(ItensEntradaRepository repository, LivroService livroService, ItensEstoqueService itensEstoqueService) {
+    public ItensEntradaService(ItensEntradaRepository repository, LivroService livroService, ItensEstoqueService itensEstoqueService, ItensEntradaRedisRepository itensEntradaRedisRepository) {
         this.repository = repository;
         this.livroService = livroService;
         this.itensEstoqueService = itensEstoqueService;
+        this.itensEntradaRedisRepository = itensEntradaRedisRepository;
     }
 
     public void addItensEntrada(Entrada entrada, ItensEntradaDto itensEntradaDto) {
+        List<ItensEntrada> itensEntradas = itensEntradaRedisRepository.getItensEntrada(entrada).orElse(new ArrayList<>());
         Livro livro = livroService.buscarLivroPorId(itensEntradaDto.livroId());
-        ItensEntrada itensEntrada = new ItensEntrada(entrada, livro, itensEntradaDto.quantidade(), itensEntradaDto.preco());
+        ItensEntrada itemEntrada = new ItensEntrada(entrada, livro, itensEntradaDto.quantidade(), itensEntradaDto.preco());
 
         boolean jaTemItem = false;
         for(ItensEntrada item : itensEntradas) {
-            if(item.getLivro().equals(itensEntrada.getLivro()) & item.getEntrada().equals(itensEntrada.getEntrada())) {
-                item.setQuantidade(item.getQuantidade() + itensEntrada.getQuantidade());
-                if (itensEntrada.getPreco() != 0) {
-                    item.setPreco(itensEntrada.getPreco());
+            if(item.getLivro().equals(itemEntrada.getLivro()) & item.getEntrada().equals(itemEntrada.getEntrada())) {
+                item.setQuantidade(item.getQuantidade() + itemEntrada.getQuantidade());
+                if (itemEntrada.getPreco() != 0) {
+                    item.setPreco(itemEntrada.getPreco());
                 }
                 jaTemItem = true;
+                break;
             }
         }
         if(!jaTemItem) {
-            if (itensEntrada.getPreco() == 0){
-                itensEntrada.setPreco(livro.getPreco());
+            if (itemEntrada.getPreco() == 0){
+                itemEntrada.setPreco(livro.getPreco());
             }
-            itensEntradas.add(itensEntrada);
+            itensEntradas.add(itemEntrada);
         }
-
+        itensEntradaRedisRepository.save(itensEntradas, entrada.getNumeroNota());
     }
 
-    public List<ItensEntrada> buscarItensEntradas(Entrada entrada) {
-        return itensEntradas.stream().filter(itensEntrada -> itensEntrada.getEntrada().equals(entrada)).toList();
-    }
 
-    public void saveItensEntrada(Entrada entrada) {
-        List<ItensEntrada> listItensEntradas = buscarItensEntradas(entrada);
-        for (ItensEntrada item : listItensEntradas) {
+    public void saveItensEntrada(Entrada entrada)  {
+        List<ItensEntrada> itensEntradas = itensEntradaRedisRepository.getItensEntrada(entrada).orElseThrow(() -> new RuntimeException("teste"));
+        for (ItensEntrada item : itensEntradas) {
             entrada.setValorTotal(item.getValorTotal());
             Livro livro = item.getLivro();
             livro.setPreco(item.getPreco());
             livroService.updateLivro(livro);
         }
-        itensEstoqueService.addEstoque(listItensEntradas);
-        repository.saveAll(listItensEntradas);
-        itensEntradas.removeAll(listItensEntradas);
+        itensEstoqueService.addEstoque(itensEntradas);
+        repository.saveAll(itensEntradas);
+        itensEntradaRedisRepository.deleteItensEntrada(entrada);
     }
 
     public List<RetornaItensDto> buscaTodosItensPorEntrada(Entrada entrada) {
@@ -77,5 +81,9 @@ public class ItensEntradaService {
                         item.getValorTotal()
                 )
         ).toList();
+    }
+
+    public List<ItensEntrada> buscarItensEntradas(Entrada entrada) {
+        return itensEntradaRedisRepository.getItensEntrada(entrada).orElse(null);
     }
 }

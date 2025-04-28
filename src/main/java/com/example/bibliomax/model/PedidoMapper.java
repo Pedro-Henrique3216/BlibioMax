@@ -5,18 +5,15 @@ import com.example.bibliomax.dto.PedidoResponse;
 
 public class PedidoMapper {
 
-    public static PedidoResponse toResponse(Pedido pedido) {
+    public static PedidoResponse toResponse(RentalOrder rentalOrder) {
         return new PedidoResponse(
-                pedido.getPagamento().getTipo(),
-                pedido.getTipoPedido(),
-                pedido.getItensPedido().stream()
+                rentalOrder.getRentalBooks().stream()
                         .map(itensPedido -> new ItensPedidoResponse(
                                 itensPedido.getId().getLivro().getTitulo(),
-                                itensPedido.getQuantidade(),
-                                itensPedido.getValor()
+                                1
                         )).toList(),
-                pedido.getValor(),
-                pedido.getStatusPedido()
+                rentalOrder.getTotal(),
+                rentalOrder.getStatusRental()
         );
     }
 }

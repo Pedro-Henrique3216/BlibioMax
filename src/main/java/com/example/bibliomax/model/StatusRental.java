@@ -1,8 +1,8 @@
 package com.example.bibliomax.model;
 
-public enum StatusPedido {
+public enum StatusRental {
     CRIADO,
     CANCELADO,
     EM_ANDAMENTO,
-    CONCLUIDO
+    DEVOLVIDO
 }

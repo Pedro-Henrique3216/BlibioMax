@@ -20,7 +20,7 @@ public class PagamentoService {
     }
 
     public Pagamento findPaymentByOrderId(Long orderId){
-        return repository.findByPedidoId(orderId).orElseThrow(() -> new RuntimeException("Payment Not Found"));
+        return repository.findByrentalOrderId(orderId).orElseThrow(() -> new RuntimeException("Payment Not Found"));
     }
 
 

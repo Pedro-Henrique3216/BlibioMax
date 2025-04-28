@@ -20,22 +20,22 @@ import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
-public class PedidoService {
+public class RentalOrderService {
 
     private final PedidoRepository orderRepository;
     private final PagamentoService paymentService;
     private final PessoaService personService;
-    private final ItensPedidoService orderItemService;
+    private final RentalItemService orderItemService;
     private final ItensEstoqueService stockItemService;
     private final LivroService bookService;
     private final EmailRequestSuccess emailRequestSuccess;
-    private final Logger logger = Logger.getLogger(PedidoService.class.getName());
+    private final Logger logger = Logger.getLogger(RentalOrderService.class.getName());
 
     @Autowired
-    public PedidoService(PedidoRepository orderRepository, PagamentoService paymentService,
-                         PessoaService personService, ItensPedidoService orderItemService,
-                         ItensEstoqueService stockItemService, LivroService bookService,
-                         EmailRequestSuccess emailRequestSuccess) {
+    public RentalOrderService(PedidoRepository orderRepository, PagamentoService paymentService,
+                              PessoaService personService, RentalItemService orderItemService,
+                              ItensEstoqueService stockItemService, LivroService bookService,
+                              EmailRequestSuccess emailRequestSuccess) {
         this.orderRepository = orderRepository;
         this.paymentService = paymentService;
         this.personService = personService;
@@ -45,32 +45,29 @@ public class PedidoService {
         this.emailRequestSuccess = emailRequestSuccess;
     }
 
-    public void saveOrder(Pedido order) {
+    public void saveOrder(RentalOrder order) {
         orderRepository.save(order);
     }
 
     @Transactional
-    public Pedido saveOrder(PedidoRequest dto, String personUsername) {
+    public RentalOrder saveOrder(PedidoRequest dto, String personUsername) {
         int tentativas = 0;
         while (tentativas < 3) {
             try {
                 Pessoa person = personService.findByUsername(personUsername);
 
-                List<ItensPedido> orderItems = dto.itens().stream()
+                List<RentalItem> orderItems = dto.itens().stream()
                         .map(this::createOrderItem)
                         .collect(Collectors.toList());
 
-                double totalOrderValue = orderItems.stream().mapToDouble(ItensPedido::getValor).sum();
-                Pagamento payment = new Pagamento(dto.tipoPagamento(), totalOrderValue);
-                paymentService.save(payment);
+                RentalOrder order = new RentalOrder(null, person);
 
-                Pedido order = new Pedido(payment, person, dto.tipoPedido(), totalOrderValue);
-                logger.info("teste");
                 orderItems.forEach(order::addItensPedido);
                 orderItemService.saveAll(orderItems);
                 orderRepository.save(order);
+                logger.info("RentalOrder salvo com sucesso!");
                 emailRequestSuccess.sendEmail(order, person);
-
+                logger.info("Email enviado com sucesso!");
                 return order;
             } catch (OptimisticLockException e) {
                 tentativas++;
@@ -84,41 +81,40 @@ public class PedidoService {
         throw new OrderCreationException("We're sorry, but the item you tried to order is no longer available. Please try again later");
     }
 
-    private ItensPedido createOrderItem(ItensPedidoRequest itensPedidoRequest) {
+    private RentalItem createOrderItem(ItensPedidoRequest itensPedidoRequest) {
         Livro book = bookService.buscarLivroPorId(itensPedidoRequest.livroId());
-        if (stockItemService.getItensEstoque(itensPedidoRequest.livroId()) < itensPedidoRequest.quantidade()) {
+        if (stockItemService.getItensEstoque(itensPedidoRequest.livroId()) == 0) {
             throw new QuantidadeObjetoNaoEncotrado("There is no such amount in stock");
         }
-        double totalItemPrice = book.getPreco() * itensPedidoRequest.quantidade();
-        stockItemService.removeItensEstoque(itensPedidoRequest.livroId(), itensPedidoRequest.quantidade());
+        stockItemService.removeItensEstoque(itensPedidoRequest.livroId(), 1);
 
-        return new ItensPedido(new ItensPedidoPK(book, null), itensPedidoRequest.quantidade(), totalItemPrice);
+        return new RentalItem(new ItensPedidoPK(book, null));
     }
 
 
-    public List<Pedido> findAll(String username) {
+    public List<RentalOrder> findAll(String username) {
         Pessoa person = personService.findByUsername(username);
-        return orderRepository.findAllByPessoa(person);
+        return orderRepository.findAllByPerson(person);
     }
 
-    public Pedido findById(Long id, String username) {
-        Pedido order = orderRepository.findById(id).orElseThrow(() -> new ObjetoNaoEncontrado("Order not found"));
+    public RentalOrder findById(Long id, String username) {
+        RentalOrder order = orderRepository.findById(id).orElseThrow(() -> new ObjetoNaoEncontrado("Order not found"));
         if(isUserAuthorized(order, username)){
             return order;
         }
         throw new AccessDeniedException("You do not have permission to access this order");
     }
 
-    public Pedido findById(Long id) {
+    public RentalOrder findById(Long id) {
         return orderRepository.findById(id).orElseThrow(() -> new ObjetoNaoEncontrado("Order not found"));
     }
 
-    public List<Pedido> findByDate(LocalDate date, String username) {
+    public List<RentalOrder> findByDate(LocalDate date, String username) {
         Pessoa person = personService.findByUsername(username);
-        return orderRepository.findAllByDatePedidoBetweenAndPessoa(date, LocalDate.now(), person);
+        return orderRepository.findAllByOrderDateBetweenAndPerson(date, LocalDate.now(), person);
     }
 
-    private boolean isUserAuthorized(Pedido pedido, String username){
-        return pedido.getPessoa().getUser().getUsername().equals(username);
+    private boolean isUserAuthorized(RentalOrder rentalOrder, String username){
+        return rentalOrder.getPerson().getUser().getUsername().equals(username);
     }
 }

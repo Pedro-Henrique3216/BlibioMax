@@ -1,7 +1,7 @@
 package com.example.bibliomax.email;
 
-import com.example.bibliomax.model.ItensPedido;
-import com.example.bibliomax.model.Pedido;
+import com.example.bibliomax.model.RentalItem;
+import com.example.bibliomax.model.RentalOrder;
 import com.example.bibliomax.model.Pessoa;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
@@ -18,14 +18,15 @@ public class EmailRequestSuccess {
     }
 
     @Async("taskExecutor")
-    public void sendEmail(Pedido pedido, Pessoa pessoa) {
+    public void sendEmail(RentalOrder rentalOrder, Pessoa pessoa) {
         StringBuilder sb = new StringBuilder();
-        sb.append("Numero do pedido ").append(pedido.getId());
+        sb.append("Numero do rentalOrder ").append(rentalOrder.getId());
         sb.append("\nItens: ");
-        for(ItensPedido itens : pedido.getItensPedido()){
+        for(RentalItem itens : rentalOrder.getRentalBooks()){
             sb.append("\n").append(itens);
         }
-        sb.append("\nValor do pedido ").append(pedido.getValor());
+        sb.append("\nValor do rentalOrder ").append(rentalOrder.getTotal());
+        sb.append("\nData do Pedido ").append(rentalOrder.getOrderDate());
         emailSender.emailSend(
             pessoa.getUser().getUsername(),
             "Pedido efetuado com sucesso",

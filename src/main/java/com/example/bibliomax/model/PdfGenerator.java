@@ -1,36 +1,38 @@
 package com.example.bibliomax.model;
 
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-
+import java.io.FileOutputStream;
 
 public class PdfGenerator {
 
-    public static void CreateInvoice(Pedido order) throws FileNotFoundException {
+    public static void CreateInvoice(RentalOrder order) throws FileNotFoundException, DocumentException {
 
-        PdfWriter pdfWriter = new PdfWriter(new File("C:\\Users\\Pedro Henrique\\Documents\\teste_nt_fiscal\\" + order.getId() + ".pdf"));
+        File file = new File("C:\\Users\\Pedro Henrique\\Documents\\teste_nt_fiscal\\" + order.getId() + ".pdf");
+        FileOutputStream fileOutputStream = new FileOutputStream(file);
 
-        PdfDocument pdfDocument = new PdfDocument(pdfWriter);
+        Document document = new Document();
+        PdfWriter.getInstance(document, fileOutputStream);
 
-        Document document = new Document(pdfDocument);
+        document.open();
 
         document.add(new Paragraph("Nota Fiscal Nº: " + order.getId()));
-        document.add(new Paragraph("Empresa: Bibliomax" ));
-        document.add(new Paragraph("Cliente: " + order.getPessoa().getNome()));
-        document.add(new Paragraph("Data de Emissão: " + order.getDatePedido()));
+        document.add(new Paragraph("Empresa: Bibliomax"));
+        document.add(new Paragraph("Cliente: " + order.getPerson().getNome()));
+        document.add(new Paragraph("Data de Emissão: " + order.getOrderDate()));
 
         document.add(new Paragraph("Itens:"));
-        for (ItensPedido item : order.getItensPedido()) {
-            document.add(new Paragraph(item.getId() + " - Qtd: " + item.getQuantidade() + " - R$" + item.getValor()));
+        for (RentalItem item : order.getRentalBooks()) {
+            document.add(new Paragraph(item.getId() + " - Qtd: " + 1 + " - R$" + item.getLateFee()));
         }
-        document.add(new Paragraph("Total: R$" + order.getValor()));
+        document.add(new Paragraph("Total: R$" + order.getTotal()));
+
 
         document.close();
     }
-
 }

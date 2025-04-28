@@ -8,6 +8,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.Mockito.*;
@@ -16,18 +17,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 class PaymentControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Autowired
-    private PedidoPagamentoService pagamentoService;
+    private PedidoPagamentoService paymentService;
 
     @TestConfiguration
     static class OrderPaymentServiceTestConfiguration {
         @Bean
-        public PedidoPagamentoService pedidoPagamentoService() {
+        public PedidoPagamentoService paymentService() {
             return mock(PedidoPagamentoService.class);
         }
     }
@@ -39,6 +41,6 @@ class PaymentControllerTest {
         mockMvc.perform(post("/payment/{id}", 1L))
                 .andExpect(status().isNoContent());
 
-        verify(pagamentoService, times(1)).confirmPayment(1L);
+        verify(paymentService, times(1)).confirmPayment(1L);
     }
 }
